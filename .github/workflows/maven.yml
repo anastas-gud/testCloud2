@@ -20,3 +20,12 @@ jobs:
         run: mvn -B package --file pom.xml
       - name: Test with Maven
         run: mvn -B test --file pom.xml
+      - name: Build Docker image
+        run: docker build -t hello-app .
+      - name: Verify endpoint
+        run: |
+          docker run -d -p 8080:8080 --name test-app hello-app
+          sleep 10
+          curl -s http://localhost:8080/api/hello | grep "Hello"
+          docker stop test-app
+          docker rm test-app
